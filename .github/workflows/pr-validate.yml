@@ -32,7 +32,7 @@ jobs:
           find workspace -name "notebook-content.py" -print -exec ruff check {} +
 
       - name: Validate parameter.yml schema
-        run: python scripts/validate_parameters.py config/parameter.yml
+        run: python scripts/validate_parameters.py workspace/parameter.yml
 
       - name: Azure login (OIDC)
         if: github.base_ref == 'test' || github.base_ref == 'main'

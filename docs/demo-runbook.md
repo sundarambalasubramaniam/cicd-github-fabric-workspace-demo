@@ -22,7 +22,7 @@ Speaker notes for the live demo. Times are cumulative.
 ## 0:05 — Phase 1: Repo & workspace tour (5 min)
 
 - `workspace/` — Fabric items as folders.
-- `config/parameter.yml` — env-specific rebinds.
+- `workspace/parameter.yml` — env-specific rebinds (lives next to items so fabric-cicd auto-loads it).
 - `.github/workflows/` — three pipelines.
 - `.github/CODEOWNERS` — enforces 4-eyes.
 

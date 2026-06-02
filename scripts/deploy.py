@@ -16,11 +16,12 @@ import os
 import sys
 from pathlib import Path
 
+from azure.identity import DefaultAzureCredential
 from fabric_cicd import FabricWorkspace, publish_all_items, unpublish_all_orphan_items
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 WORKSPACE_DIR = REPO_ROOT / "workspace"
-PARAMETER_FILE = REPO_ROOT / "config" / "parameter.yml"
+PARAMETER_FILE = WORKSPACE_DIR / "parameter.yml"
 
 # Item types we manage in this demo. Keep in sync with /workspace folders.
 ITEM_TYPES = [
@@ -51,6 +52,7 @@ def main() -> int:
         repository_directory=str(WORKSPACE_DIR),
         item_type_in_scope=ITEM_TYPES,
         parameter_file_name=str(PARAMETER_FILE.name),
+        token_credential=DefaultAzureCredential(),
     )
 
     if dry_run:
