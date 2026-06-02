@@ -1,0 +1,5 @@
+# Pin versions — bump via Dependabot.
+fabric-cicd==0.1.21
+azure-identity==1.19.0
+requests==2.32.3
+PyYAML==6.0.2

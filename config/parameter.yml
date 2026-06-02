@@ -1,0 +1,43 @@
+# fabric-cicd parameter file
+# Docs: https://microsoft.github.io/fabric-cicd/latest/how_to/parameterization/
+#
+# This file lets us swap environment-specific values (connection IDs, lakehouse refs,
+# capacity IDs, workspace IDs) when publishing to Test vs Prod. Values shown are
+# illustrative — replace GUIDs with real IDs from your tenant.
+
+find_replace:
+  # Lakehouse ID rebind — different lakehouse per environment
+  - find_value: "00000000-0000-0000-0000-000000000DEV"   # Dev Bronze.Lakehouse ID
+    replace_value:
+      test: "00000000-0000-0000-0000-000000000TST"
+      prod: "00000000-0000-0000-0000-000000000PRD"
+    item_type: ["Notebook", "DataPipeline", "SemanticModel"]
+
+  # Warehouse connection rebind
+  - find_value: "warehouse-conn-dev"
+    replace_value:
+      test: "warehouse-conn-test"
+      prod: "warehouse-conn-prod"
+    item_type: ["DataPipeline", "Notebook"]
+
+  # Eventhouse / KQL database
+  - find_value: "kql-db-dev"
+    replace_value:
+      test: "kql-db-test"
+      prod: "kql-db-prod"
+    item_type: ["Eventhouse", "KQLDatabase"]
+
+  # Storage account / shortcut paths used in notebooks
+  - find_value: "abfss://dev@contosolakedev.dfs.core.windows.net"
+    replace_value:
+      test: "abfss://test@contosolaketest.dfs.core.windows.net"
+      prod: "abfss://prod@contosolakeprod.dfs.core.windows.net"
+    item_type: ["Notebook", "DataPipeline"]
+
+key_value_replace:
+  # Per-env feature flag baked into notebook config cell
+  - find_key: "$.environment"
+    replace_value:
+      test: "test"
+      prod: "prod"
+    file_path: "/Sales.Notebook/notebook-content.py"

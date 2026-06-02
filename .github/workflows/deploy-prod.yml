@@ -1,0 +1,58 @@
+name: Deploy to Prod
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: deploy-prod
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    # The 'prod' GitHub Environment must be configured with required reviewers
+    # (the OTHER engineer) — this enforces 4-eyes promotion to Prod.
+    environment: prod
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Azure login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          allow-no-subscriptions: true
+
+      - name: Publish to Prod workspace via fabric-cicd
+        env:
+          FABRIC_WORKSPACE_ID: ${{ vars.WORKSPACE_ID_PROD }}
+          FABRIC_ENVIRONMENT: prod
+          DRY_RUN: "false"
+        run: python scripts/deploy.py
+
+      - name: Post-deploy validation
+        env:
+          FABRIC_WORKSPACE_ID: ${{ vars.WORKSPACE_ID_PROD }}
+        run: python scripts/smoke_test.py
+
+      - name: Tag release
+        run: |
+          TAG="prod-$(date -u +%Y%m%d-%H%M%S)-${GITHUB_SHA::7}"
+          git tag "$TAG"
+          git push origin "$TAG"

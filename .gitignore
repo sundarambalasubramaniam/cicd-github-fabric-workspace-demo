@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+.env
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# fabric-cicd
+.fabric_cicd/
+*.log
+
+# Local secrets — should never be committed (we use OIDC, but belt + braces)
+*.pem
+*.pfx
+secrets.*
+
+# Setup outputs (not secret, but environment-specific)
+scripts/setup/workspace-ids.json
+scripts/setup/sp-info.json
