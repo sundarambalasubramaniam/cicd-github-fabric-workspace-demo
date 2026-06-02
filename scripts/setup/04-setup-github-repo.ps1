@@ -122,7 +122,7 @@ try {
 
     Write-Step "Create environments: test, prod"
     # test: no approvers
-    gh api -X PUT "repos/$GitHubRepo/environments/test" -f wait_timer=0 1>$null
+    gh api -X PUT "repos/$GitHubRepo/environments/test" -F wait_timer=0 1>$null
     Write-Ok "env 'test' ready"
 
     # prod: required reviewers
