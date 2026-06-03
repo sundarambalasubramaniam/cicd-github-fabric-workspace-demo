@@ -1,0 +1,1 @@
+Need to do a demo  best practice of CICD pipeline for Fabric from Github, across dev , test , prod workspace. Org has two developer / fabric engineer. Can you please come up with a plan for demo and showcasing best practice in managing cicd pipeline for fabric from github perspective. Can you share a plan first.
