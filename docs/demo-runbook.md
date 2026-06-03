@@ -32,24 +32,58 @@ Speaker notes for the live demo. Times are cumulative.
 
 Acting as **Dev1**:
 
-```bash
-git checkout dev && git pull
+```powershell
+# 1. Create the feature branch locally AND push it to GitHub first.
+#    Fabric will not show a branch in the picker until it exists on the remote.
+git checkout dev
+git pull
 git checkout -b feature/add-sales-kpi
+git push -u origin feature/add-sales-kpi
+```
+
+> **Why push first?** The Fabric Dev workspace lists branches it can see on the remote.
+> If `feature/add-sales-kpi` only exists locally, the branch picker won't show it
+> (and the **Manage connection** dropdown looks empty / stuck on `dev`).
+
+Verify on GitHub before going to Fabric:
+
+```powershell
+git ls-remote --heads origin feature/add-sales-kpi   # must return a sha
+# or, if gh CLI is installed:
+gh browse --branch feature/add-sales-kpi
 ```
 
 In Fabric Dev workspace UI:
-1. **Manage connection** → switch to branch `feature/add-sales-kpi`.
+1. Workspace top bar → branch name → **refresh** the branch list →
+   **Manage connection** → switch to `feature/add-sales-kpi`.
+   - If it's still missing: workspace settings → Git integration → re-connect (token can expire),
+     and confirm the capacity is **active** (paused F-SKU silently disables Git controls).
 2. Add a new cell to `Sales` notebook computing a KPI. Save.
 3. Add a parameter to `Ingest` pipeline.
 4. Workspace toolbar → **Source control** → review changes → **Commit**.
 
 In GitHub:
-1. Push branch, open PR `feature/add-sales-kpi → dev`.
-2. **Dev2** reviews. CODEOWNERS forces this. Approve, merge.
+1. Open PR `feature/add-sales-kpi → dev`:
+   ```powershell
+   gh pr create --base dev --head feature/add-sales-kpi --fill
+   # or use the GitHub UI: Compare & pull request → base: dev
+   ```
+2. `pr-validate.yml` runs (lint + parameter schema + fabric-cicd dry-run).
+3. **Dev2** reviews. CODEOWNERS forces this. Approve, merge.
 
 Back in Dev workspace: switch connection to `dev`, click **Update from Git** → see merged change appear.
 
 **Talking point**: "Both devs working on the same workspace risks UI conflicts — that's why Approach B exists."
+
+### Troubleshooting — branch not visible in Fabric
+
+| Symptom | Fix |
+|---------|-----|
+| Branch picker doesn't list `feature/...` | Branch isn't pushed yet. `git push -u origin <branch>`, then click refresh. |
+| Picker is empty / connection error | Git token expired. Workspace settings → Git integration → reconnect. |
+| No branch picker at all | Wrong workspace (Test/Prod aren't Git-connected by design) or setup step 5 (`05-connect-dev-git.ps1`) wasn't run. |
+| Git controls greyed out | F-SKU capacity paused. `az resource list --resource-type Microsoft.Fabric/capacities --query "[].{name:name,state:properties.state}" -o table` → resume if needed. |
+| `git push` rejected | `git pull --rebase origin dev`, resolve, push again. |
 
 ---
 
