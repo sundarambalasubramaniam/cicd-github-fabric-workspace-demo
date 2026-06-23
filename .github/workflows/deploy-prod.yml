@@ -20,7 +20,7 @@ jobs:
     # (the OTHER engineer) — this enforces 4-eyes promotion to Prod.
     environment: prod
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Set up Python
         uses: actions/setup-python@v5
